@@ -1,12 +1,10 @@
-function objectPropertyAccess() {
-    let obj = { a: { b: { c: 1 } } };
-
-    for (let i = 0; i < 1000; i++) {
-        let value = obj.a.b.c;
-        obj = { a: { b: { c: value } } };
-    }
-
-    return obj;
+function math() {
+    let baseNumber = Math.pow(4, 7);
+    let result = 0;
+    for (let i = baseNumber; i >= 0; i--) {		
+        result += Math.atan(i) * Math.tan(i);
+    };
+    return result;
 }
 
 function stringManipulation() {
@@ -18,13 +16,15 @@ function stringManipulation() {
     return str;
 }
 
-function math() {
-    let baseNumber = Math.pow(4, 7);
-    let result = 0;
-    for (let i = baseNumber; i >= 0; i--) {		
-        result += Math.atan(i) * Math.tan(i);
-    };
-    return result;
+function objectPropertyAccess() {
+    let obj = { a: { b: { c: 1 } } };
+
+    for (let i = 0; i < 1000; i++) {
+        let value = obj.a.b.c;
+        obj = { a: { b: { c: value } } };
+    }
+
+    return obj;
 }
 
 const benchmark = (func, params, iterations) => {
