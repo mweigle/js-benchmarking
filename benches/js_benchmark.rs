@@ -1,18 +1,19 @@
 use boa_engine::{Context, Source};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
-fn run_js(code: &str) {
-    let mut context = Context::default();
-
+fn run_js(context: &mut Context, code: &str) {
     context.eval(Source::from_bytes(code)).unwrap();
     context.eval(Source::from_bytes("main()")).unwrap();
 }
 
 fn js_benchmark(c: &mut Criterion) {
+    let mut context = Context::default();
     c.bench_function("math", |b| {
         b.iter(|| {
-            run_js(black_box(
-                r#"
+            run_js(
+                &mut context,
+                black_box(
+                    r#"
         function main() {
             let baseNumber = Math.pow(4, 7);
             let result = 0;
@@ -22,13 +23,17 @@ fn js_benchmark(c: &mut Criterion) {
             return result;
         }
         "#,
-            ))
+                ),
+            )
         })
     });
+    let mut context = Context::default();
     c.bench_function("string manipulation", |b| {
         b.iter(|| {
-            run_js(black_box(
-                r#"
+            run_js(
+                &mut context,
+                black_box(
+                    r#"
         function main() {
             let str = '';
             for (let i = 0; i < 30; i++) {
@@ -38,13 +43,17 @@ fn js_benchmark(c: &mut Criterion) {
             return str;
         }
         "#,
-            ))
+                ),
+            )
         })
     });
+    let mut context = Context::default();
     c.bench_function("object property access", |b| {
         b.iter(|| {
-            run_js(black_box(
-                r#"
+            run_js(
+                &mut context,
+                black_box(
+                    r#"
         function main() {
             let obj = { a: { b: { c: 1 } } };
 
@@ -56,7 +65,8 @@ fn js_benchmark(c: &mut Criterion) {
             return obj;
         }
         "#,
-            ))
+                ),
+            )
         })
     });
 }
