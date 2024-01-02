@@ -28,18 +28,16 @@ function math() {
 }
 
 const benchmark = (func, params, iterations) => {
-    
-    let time = [];
+    let times = [];
     for (let i = 0; i < iterations; i++) {
         const t0 = performance.now()    
         func(params)
         const t1 = performance.now()
-        time.push(t1 - t0);
+        times.push(t1 - t0);
     }
-    time.sort();
-    let median = time[time.length / 2];
+    times.sort();
+    let median = times[times.length / 2];
 
-    
     return `${func.name}: ${median}ms`
 }
 
