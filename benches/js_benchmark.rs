@@ -1,50 +1,61 @@
+use boa_engine::{Context, Source};
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
 
+fn run_js(code: &str) {
+    let mut context = Context::default();
 
-#[derive(Serialize)]
-struct TestArticle {
-    quantity: usize,
-    price: f32,
-}
-
-#[derive(Deserialize, Clone)]
-struct TestOutput {
-    a: i32,
-    b: f64,
-}
-
-fn transform_object(code: String) {
-    let change_observer: ChangeObserver = ChangeObserver::new();
-    let mut js_node = JsNode::new(Some(&change_observer));
-    js_node.code_input.send(code).unwrap();
-    js_node
-        .input
-        .send(TestArticle {
-            quantity: 2,
-            price: 9.0,
-        })
-        .unwrap();
-    let mock_output = Edge::<TestOutput>::new();
-    connect(js_node.output.clone(), mock_output.clone());
-    js_node.on_ready().unwrap();
-    js_node.on_update().unwrap();
+    context.eval(Source::from_bytes(code)).unwrap();
+    context.eval(Source::from_bytes("main()")).unwrap();
 }
 
 fn js_benchmark(c: &mut Criterion) {
-    c.bench_function("js", |b| {
+    c.bench_function("math", |b| {
         b.iter(|| {
-            transform_object(black_box(
+            run_js(black_box(
                 r#"
-function main(input) {
-    input.quantity += 5;
+        function main() {
+            let baseNumber = Math.pow(4, 7);
+            let result = 0;
+            for (let i = baseNumber; i >= 0; i--) {		
+                result += Math.atan(i) * Math.tan(i);
+            };
+            return result;
+        }
+        "#,
+            ))
+        })
+    });
+    c.bench_function("string manipulation", |b| {
+        b.iter(|| {
+            run_js(black_box(
+                r#"
+        function main() {
+            let str = '';
+            for (let i = 0; i < 30; i++) {
+                str += 'abcdefghijklmnopqrstuvwxyz';
+                str = str.split('').reverse().join('');
+            }
+            return str;
+        }
+        "#,
+            ))
+        })
+    });
+    c.bench_function("object property access", |b| {
+        b.iter(|| {
+            run_js(black_box(
+                r#"
+        function main() {
+            let obj = { a: { b: { c: 1 } } };
 
-    return {
-        a: input.quantity,
-        b: Math.sqrt(input.price),
-    };
-}
-"#
-                .to_string(),
+            for (let i = 0; i < 1000; i++) {
+                let value = obj.a.b.c;
+                obj = { a: { b: { c: value } } };
+            }
+        
+            return obj;
+        }
+        "#,
             ))
         })
     });
