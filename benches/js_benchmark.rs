@@ -35,14 +35,13 @@ fn js_benchmark(c: &mut Criterion) {
         return obj;
     }
 
-    function iterateAndAddRandom() {
+    function randomNumbers() {
         let list = [];
         iterations = 2000;
         for (let i = 0; i < iterations; i++) {
             let randomFloat = Math.random();
             list.push(randomFloat);
         }
-        // console.log(list)
         return list;
     }
     "#,
@@ -57,8 +56,8 @@ fn js_benchmark(c: &mut Criterion) {
     c.bench_function("object property access", |b| {
         b.iter(|| context.eval(Source::from_bytes("objectPropertyAccess()")))
     });
-    c.bench_function("iterate and add random", |b| {
-        b.iter(|| context.eval(Source::from_bytes("iterateAndAddRandom()")))
+    c.bench_function("random numbers", |b| {
+        b.iter(|| context.eval(Source::from_bytes("randomNumbers()")))
     });
 }
 

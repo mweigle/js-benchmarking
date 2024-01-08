@@ -27,7 +27,22 @@ function objectPropertyAccess() {
     return obj;
 }
 
+function randomNumbers() {
+    let list = [];
+    iterations = 2000;
+    for (let i = 0; i < iterations; i++) {
+        let randomFloat = Math.random();
+        list.push(randomFloat);
+    }
+    return list;
+}
+
 const benchmark = (func, params, iterations) => {
+    // warmup
+    for (let i = 0; i < 1000; i++) {   
+        func(params)
+    }
+
     let times = [];
     for (let i = 0; i < iterations; i++) {
         const t0 = performance.now()    
@@ -44,3 +59,4 @@ const benchmark = (func, params, iterations) => {
 console.log(benchmark(math, null, 200));
 console.log(benchmark(stringManipulation, null, 400));
 console.log(benchmark(objectPropertyAccess, null, 1300)); // iteration count same as in criterion
+console.log(benchmark(randomNumbers, null, 500))
